@@ -87,7 +87,7 @@ button, input { font: inherit; color: inherit; }
 :root[data-theme="light"] .theme-btn .i-sun { display: block; }
 :root[data-theme="light"] .theme-btn .i-moon { display: none; }
 .hdr-total { margin-inline-start: auto; display: flex; align-items: center; gap: 8px; font-family: var(--font-display); font-size: 0.9rem; color: var(--muted); }
-.hdr-total b { color: var(--accent-text); font-weight: 800; font-size: 1.05rem; direction: ltr; font-variant-numeric: tabular-nums; }
+.hdr-total b { color: var(--accent-text); font-weight: 800; font-size: 1.05rem; direction: ltr; unicode-bidi: isolate; font-variant-numeric: tabular-nums; }
 
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 46px; padding: 0 24px; border-radius: 8px; border: 1px solid transparent; font-family: var(--font-display); font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: transform 0.15s, background 0.15s, border-color 0.15s; text-align: center; }
 .btn-fill { background: linear-gradient(135deg, var(--accent-deep), var(--accent-2)); color: #0b1430; }
@@ -148,7 +148,7 @@ button, input { font: inherit; color: inherit; }
 .pbar { position: sticky; top: calc(env(safe-area-inset-top, 0px) + var(--hdr-h, 66px)); z-index: 15; background: var(--bg); padding-block: 10px; border-bottom: 1px solid var(--line); }
 .pbar-in { display: flex; flex-direction: column; gap: 8px; }
 .pbar-row { display: flex; justify-content: space-between; gap: 12px; font-size: 0.9rem; color: var(--muted); }
-.pbar-row b { color: var(--fg); font-family: var(--font-display); direction: ltr; font-variant-numeric: tabular-nums; }
+.pbar-row b { color: var(--fg); font-family: var(--font-display); direction: ltr; unicode-bidi: isolate; font-variant-numeric: tabular-nums; }
 .track { height: 8px; border-radius: 8px; background: var(--card); border: 1px solid var(--line); overflow: hidden; }
 .fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--accent-deep), var(--accent-2)); transition: width 0.3s; }
 
@@ -216,6 +216,19 @@ button, input { font: inherit; color: inherit; }
 .coach-photo.big img { border-width: 3px; }
 .coach-photo.big.cheer { animation: cheer 0.7s ease-out; }
 @keyframes floaty { 0%, 100% { translate: 0 0; } 50% { translate: 0 -8px; } }
+
+/* Honor roll */
+.honor-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.honor-card { display: flex; align-items: center; gap: 14px; background: var(--card); border: 1px solid var(--accent); border-radius: 12px; padding: 14px 18px; min-width: 0; }
+.honor-card .medal { flex: none; display: grid; place-items: center; width: 46px; height: 46px; border-radius: 50%; background: var(--accent-soft); color: var(--accent-text); }
+.honor-card .who { min-width: 0; display: flex; flex-direction: column; }
+.honor-card b { font-family: var(--font-display); font-size: 1.08rem; font-weight: 700; overflow-wrap: anywhere; }
+.honor-card span.when { color: var(--muted); font-size: 0.84rem; }
+.honor-empty { grid-column: 1 / -1; text-align: center; color: var(--muted); background: var(--card); border: 1px dashed var(--line); border-radius: 12px; padding: 28px 20px; }
+.honor-empty b { display: block; color: var(--fg); font-family: var(--font-display); font-size: 1.1rem; margin-bottom: 4px; }
+.result .honor-note { color: var(--fg); background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 10px; padding: 10px 16px; max-width: 52ch; }
+.hero .btn-row { display: flex; flex-wrap: wrap; gap: 10px; }
+@media (max-width: 700px) { .honor-list { grid-template-columns: 1fr; } }
 
 /* Success effects */
 #fx { position: fixed; inset: 0; pointer-events: none; z-index: 50; overflow: hidden; }
@@ -290,6 +303,7 @@ button, input { font: inherit; color: inherit; }
         <p class="lead">كل درس فيه 10 أسئلة، وكل إجابة صحيحة بدرجة، فدرجة الدرس من 10 ومجموع كل الدروس من <b id="maxTotal">110</b>. بعد كل إجابة يظهر التصحيح فورًا، وفي آخر الدرس تبعت درجتك لمسيو رضا على واتساب.</p>
       </div>
       <div class="wrap">
+        <div class="btn-row" style="margin-top:20px"><button class="btn btn-line btn-sm" id="honorBtn" type="button"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg><span>لوحة الشرف</span></button></div>
         <div class="stats">
           <div class="stat"><span class="stat-v" id="stLessons">10</span><span class="stat-l">دروس</span></div>
           <div class="stat"><span class="stat-v" id="stQs">100</span><span class="stat-l">سؤال</span></div>
@@ -306,6 +320,20 @@ button, input { font: inherit; color: inherit; }
           <p>تقدر تعيد أي درس كل ما تحب، وبتتحفظ أفضل درجة ليك باسمك على نفس الجهاز.</p>
         </div>
         <div class="lessons" id="lessonGrid"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="honorView" hidden>
+    <div class="band" style="padding-top:28px">
+      <div class="wrap">
+        <button class="back" id="honorBack" type="button">← كل الدروس</button>
+        <div class="sec-head" style="margin-top:22px">
+          <span class="eyebrow">Tableau d'honneur</span>
+          <h2>لوحة الشرف</h2>
+          <p>الطلاب اللي جابوا الدرجة النهائية في كل الدروس. مبروك لهم، وهنكافئهم.</p>
+        </div>
+        <div class="honor-list" id="honorList"></div>
       </div>
     </div>
   </section>
@@ -498,6 +526,7 @@ var LESSONS = [
     ] }
 ];
 
+var TROPHY_SVG = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>';
 var TEACHER = "201558186187";
 var STORE = "bravo_quiz_v3";
 var data = { last: "", users: {} };
@@ -520,6 +549,7 @@ function showView(v) {
   $("nameView").hidden = v !== "name";
   $("pickerView").hidden = v !== "picker";
   $("quizView").hidden = v !== "quiz";
+  $("honorView").hidden = v !== "honor";
   window.scrollTo(0, 0);
 }
 
@@ -703,25 +733,32 @@ function finish() {
   slot.innerHTML =
     '<div class="result" id="resBox"><span class="who">الطالب: <b></b></span>' +
     '<div class="ring" style="--p:' + (score * 10) + '%"><div class="score">' + score + '<small>من 10</small></div></div>' +
-    '<h3></h3><p class="msg"></p><p class="tot"></p>' +
+    '<h3></h3><p class="msg"></p><p class="tot"></p><p class="honor-note"></p>' +
     '<a class="btn btn-wa" id="waBtn" target="_blank" rel="noopener">أرسل درجتي لمسيو رضا على واتساب</a>' +
     '<p class="share-note">يفتح واتساب برسالة جاهزة لمسيو رضا على الرقم <span class="num">01558186187</span>. اضغط إرسال لتصله درجتك.</p>' +
     '<div class="res-row"><button class="btn btn-fill" id="retryBtn" type="button">أعد الدرس</button>' +
     (hasNext ? '<button class="btn btn-line" id="nextBtn" type="button">الدرس التالي</button>' : '') +
-    '<button class="btn btn-line" id="listBtn" type="button">كل الدروس</button></div></div>';
+    '<button class="btn btn-line" id="honorBtn2" type="button">لوحة الشرف</button><button class="btn btn-line" id="listBtn" type="button">كل الدروس</button></div></div>';
   slot.querySelector(".who b").textContent = name;
   slot.querySelector("h3").textContent = title;
   slot.querySelector(".msg").textContent = msg;
   var grand = 0, bb = myBest();
   LESSONS.forEach(function (x) { if (bb[x.id]) grand += bb[x.id].s; });
   slot.querySelector(".tot").textContent = "مجموع درجاتك في كل الدروس: " + grand + " من " + (LESSONS.length * 10);
+  var full = grand === LESSONS.length * 10, note = "";
+  if (inHonor(name)) note = "اسمك موجود في لوحة الشرف يا " + name + ". مبروك!";
+  else if (full) note = "مبروك يا " + name + "! جبت الدرجة النهائية في كل الدروس. ابعت درجتك لمسيو رضا ليكتب اسمك في لوحة الشرف ويكافئك.";
+  else if (score === 10) note = "ممتاز! درجة كاملة في هذا الدرس. حل باقي الدروس بالدرجة النهائية عشان يظهر اسمك في لوحة الشرف.";
+  else note = "حل كل الدروس بالدرجة النهائية عشان يظهر اسمك في لوحة الشرف ويكافئك مسيو رضا.";
+  slot.querySelector(".honor-note").textContent = note;
+  $("honorBtn2").addEventListener("click", function () { renderHonor(); showView("honor"); });
   var text = "السلام عليكم مسيو رضا،\nأنا الطالب: " + name + "\nنتيجتي في الدرس " + L.n + " (" + L.title + ") هي " + score + " من 10.\nمجموع درجاتي في كل الدروس: " + grand + " من " + (LESSONS.length * 10) + ".";
   $("waBtn").setAttribute("href", "https://wa.me/" + TEACHER + "?text=" + encodeURIComponent(text));
   $("retryBtn").addEventListener("click", function () { startLesson(cur); });
   if (hasNext) $("nextBtn").addEventListener("click", function () { startLesson(cur + 1); });
   $("listBtn").addEventListener("click", goHome);
   renderPicker();
-  if (score >= 7) confetti();
+  if (score >= 7 || full) confetti();
   setTimeout(function () { $("resBox").scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" }); }, 250);
 }
 
@@ -758,6 +795,38 @@ window.addEventListener("resize", syncHdr);
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(syncHdr);
 syncHdr();
 
+/* Honor roll: names come from honor.json, which the teacher updates */
+var HONOR = [];
+function honorName(e) { return (typeof e === "string" ? e : (e && e.name) || "").trim(); }
+function inHonor(n) { var k = n.toLowerCase(); return HONOR.some(function (e) { return honorName(e).toLowerCase() === k; }); }
+function renderHonor() {
+  var box = $("honorList");
+  box.innerHTML = "";
+  var list = HONOR.filter(function (e) { return honorName(e); });
+  if (!list.length) {
+    box.innerHTML = '<div class="honor-empty"><b>لسه مفيش أسماء</b>أول طالب يجيب الدرجة النهائية في كل الدروس ويبعتها لمسيو رضا، هيظهر اسمه هنا.</div>';
+    return;
+  }
+  list.forEach(function (e) {
+    var c = document.createElement("div");
+    c.className = "honor-card";
+    c.innerHTML = '<span class="medal">' + TROPHY_SVG + '</span><span class="who"><b></b><span class="when"></span></span>';
+    c.querySelector("b").textContent = honorName(e);
+    var d = typeof e === "object" && e.date ? e.date : "";
+    if (d) c.querySelector(".when").textContent = d; else c.querySelector(".when").remove();
+    box.appendChild(c);
+  });
+}
+function loadHonor() {
+  var done = function () { renderHonor(); };
+  try {
+    fetch("honor.json", { cache: "no-store" }).then(function (r) { return r.ok ? r.json() : []; })
+      .then(function (a) { HONOR = Array.isArray(a) ? a : []; }).catch(function () { HONOR = []; }).then(done);
+  } catch (e) { done(); }
+}
+$("honorBtn").addEventListener("click", function () { renderHonor(); showView("honor"); });
+$("honorBack").addEventListener("click", goHome);
+
 /* Name gate */
 $("nameInput").value = data.last || "";
 $("nameForm").addEventListener("submit", function (e) {
@@ -774,6 +843,7 @@ $("changeName").addEventListener("click", function () { $("nameInput").value = n
 $("backBtn").addEventListener("click", goHome);
 $("homeLink").addEventListener("click", function (e) { e.preventDefault(); goHome(); });
 
+loadHonor();
 showView("name");
 </script>
 </body>
