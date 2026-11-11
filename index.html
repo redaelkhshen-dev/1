@@ -826,18 +826,10 @@ $("trophyHero").addEventListener("click", playWin);
 var HONOR = [];
 function honorName(e) { return (typeof e === "string" ? e : (e && e.name) || "").trim(); }
 function inHonor(n) { var k = n.toLowerCase(); return HONOR.some(function (e) { return honorName(e).toLowerCase() === k; }); }
-function honorScore(e) { var n = e && typeof e === "object" ? Number(e.score) : NaN; return isNaN(n) ? -1 : n; }
 function renderHonor() {
   var box = $("honorList");
   box.innerHTML = "";
-  var max = LESSONS.length * 10;
-  var list = HONOR.filter(function (e) { return honorName(e); }).slice().sort(function (a, b) {
-    var d = honorScore(b) - honorScore(a);
-    if (d) return d;
-    var da = (a && a.date) || "9999", db = (b && b.date) || "9999";
-    if (da !== db) return da < db ? -1 : 1;
-    return honorName(a).localeCompare(honorName(b), "ar");
-  });
+  var list = HONOR.filter(function (e) { return honorName(e); });
   if (!list.length) {
     box.innerHTML = '<div class="honor-empty"><b>لسه مفيش أسماء</b>أول طالب يجيب درجات عالية في الدروس ويبعتها لمسيو رضا، هيظهر اسمه هنا.</div>';
     return;
@@ -845,12 +837,8 @@ function renderHonor() {
   list.forEach(function (e, i) {
     var c = document.createElement("div");
     c.className = "honor-card";
-    c.innerHTML = '<span class="rank r' + (i < 3 ? i + 1 : 0) + '">' + (i + 1) + '</span><span class="who"><b></b><span class="when"></span></span><span class="pts"></span>';
+    c.innerHTML = '<span class="rank r' + (i < 3 ? i + 1 : 0) + '">' + (i + 1) + '</span><span class="who"><b></b></span>';
     c.querySelector("b").textContent = honorName(e);
-    var d = typeof e === "object" && e.date ? e.date : "";
-    if (d) c.querySelector(".when").textContent = d; else c.querySelector(".when").remove();
-    var sc = honorScore(e);
-    if (sc >= 0) c.querySelector(".pts").textContent = sc + " / " + max; else c.querySelector(".pts").remove();
     box.appendChild(c);
   });
 }
