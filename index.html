@@ -287,7 +287,7 @@ button, input { font: inherit; color: inherit; }
         <span class="eyebrow">Première année secondaire · A1</span>
         <p class="hello">أهلًا يا <b id="helloName"></b><button class="link" id="changeName" type="button">تغيير الاسم</button></p>
         <h1><span class="hl">Testez-vous !</span><br>اختبر نفسك في كل درس</h1>
-        <p class="lead">كل درس فيه 10 أسئلة، وكل إجابة صحيحة بدرجة، فدرجة الدرس من 10 ومجموع الدروس العشرة من 100. بعد كل إجابة يظهر التصحيح فورًا، وفي آخر الدرس تبعت درجتك لمسيو رضا على واتساب.</p>
+        <p class="lead">كل درس فيه 10 أسئلة، وكل إجابة صحيحة بدرجة، فدرجة الدرس من 10 ومجموع كل الدروس من <b id="maxTotal">110</b>. بعد كل إجابة يظهر التصحيح فورًا، وفي آخر الدرس تبعت درجتك لمسيو رضا على واتساب.</p>
       </div>
       <div class="wrap">
         <div class="stats">
@@ -482,6 +482,19 @@ var LESSONS = [
       ["كيف تسأل: «كيف حال حضرتك؟»", ["Comment allez-vous ?", "Comment vous appelez-vous ?", "Où habitez-vous ?", "Quel âge avez-vous ?"], 0, "مع حضرتك نقول Comment allez-vous ?"],
       ["كيف تسأل: «ما عمرك؟»", ["Quel âge as-tu ?", "Quelle est ton adresse ?", "Qui est-ce ?", "Où habites-tu ?"], 0, "Quel âge as-tu ? = كم عمرك؟"],
       ["كيف تسأل: «ما لونك المفضل؟»", ["Quelle est ta couleur préférée ?", "Quel âge as-tu ?", "Qui est-ce ?", "Comment ça va ?"], 0, "Quelle est ta couleur préférée ? = ما لونك المفضل؟"]
+    ] },
+  { id: "l11", n: "11", title: "شرح الصفات", fr: "Expliquer les adjectifs", desc: "معنى كل صفة بالفرنسية: bavard, gourmand, intelligent, sociable, timide, ordonné, désordonné, serviable.",
+    qs: [
+      ["اختر الشرح الصحيح للصفة « bavard »:", ["Il parle beaucoup.", "Il mange beaucoup.", "Il comprend vite.", "Il a beaucoup d'amis."], 0, "bavard (ثرثار) = Il parle beaucoup، أي يتكلم كثيرًا."],
+      ["أكمل: « Il mange beaucoup. » Il est ___.", ["gourmand", "bavard", "timide", "serviable"], 0, "gourmand (يحب الأكل) = Il mange beaucoup، أي يأكل كثيرًا."],
+      ["اختر الشرح الصحيح للصفة « intelligent »:", ["Il comprend vite.", "Il n'ose pas parler aux autres.", "Il met ses affaires partout.", "Il aide tout le monde."], 0, "intelligent (ذكي) = Il comprend vite، أي يفهم بسرعة."],
+      ["أكمل: « Il a beaucoup d'amis. » Il est ___.", ["sociable", "timide", "désordonné", "gourmand"], 0, "sociable (اجتماعي) = Il a beaucoup d'amis، أي عنده أصدقاء كثيرون."],
+      ["اختر الشرح الصحيح للصفة « timide »:", ["Il n'ose pas parler aux autres.", "Il parle beaucoup.", "Il a beaucoup d'amis.", "Il mange beaucoup."], 0, "timide (خجول) = Il n'ose pas parler aux autres، أي لا يجرؤ على الكلام مع الآخرين."],
+      ["أكمل: « Il range ses affaires. » Il est ___.", ["ordonné", "désordonné", "bavard", "intelligent"], 0, "ordonné (منظّم) = Il range ses affaires، أي يرتّب أغراضه."],
+      ["اختر الشرح الصحيح للصفة « désordonné »:", ["Il met ses affaires partout.", "Il range ses affaires.", "Il aime beaucoup l'ordre.", "Il aide tout le monde."], 0, "désordonné (غير منظّم) = Il met ses affaires partout، أي يضع أغراضه في كل مكان. وهو عكس ordonné."],
+      ["أكمل: « Il aide tout le monde. » Il est ___.", ["serviable", "sociable", "timide", "gourmand"], 0, "serviable (خدوم) = Il aide tout le monde، أي يساعد الجميع."],
+      ["اختر الشرح الصحيح للصفة « ordonné »:", ["Il aime beaucoup l'ordre.", "Il met ses affaires partout.", "Il n'ose pas parler aux autres.", "Il parle beaucoup."], 0, "ordonné = Il aime beaucoup l'ordre، أي يحب النظام."],
+      ["اختر الشرح الصحيح للصفة « serviable »:", ["Il est au service des autres.", "Il comprend vite.", "Il parle beaucoup.", "Il mange beaucoup."], 0, "serviable = Il est au service des autres، أي في خدمة الآخرين."]
     ] }
 ];
 
@@ -598,7 +611,8 @@ function renderPicker() {
   $("stLessons").textContent = LESSONS.length;
   $("stQs").textContent = qn;
   $("stDone").textContent = done + "/" + LESSONS.length;
-  $("hdrAvg").textContent = sum + " / 100";
+  $("hdrAvg").textContent = sum + " / " + (LESSONS.length * 10);
+  $("maxTotal").textContent = LESSONS.length * 10;
   $("helloName").textContent = name;
 }
 
@@ -700,8 +714,8 @@ function finish() {
   slot.querySelector(".msg").textContent = msg;
   var grand = 0, bb = myBest();
   LESSONS.forEach(function (x) { if (bb[x.id]) grand += bb[x.id].s; });
-  slot.querySelector(".tot").textContent = "مجموع درجاتك في كل الدروس: " + grand + " من 100";
-  var text = "السلام عليكم مسيو رضا،\nأنا الطالب: " + name + "\nنتيجتي في الدرس " + L.n + " (" + L.title + ") هي " + score + " من 10.\nمجموع درجاتي في كل الدروس: " + grand + " من 100.";
+  slot.querySelector(".tot").textContent = "مجموع درجاتك في كل الدروس: " + grand + " من " + (LESSONS.length * 10);
+  var text = "السلام عليكم مسيو رضا،\nأنا الطالب: " + name + "\nنتيجتي في الدرس " + L.n + " (" + L.title + ") هي " + score + " من 10.\nمجموع درجاتي في كل الدروس: " + grand + " من " + (LESSONS.length * 10) + ".";
   $("waBtn").setAttribute("href", "https://wa.me/" + TEACHER + "?text=" + encodeURIComponent(text));
   $("retryBtn").addEventListener("click", function () { startLesson(cur); });
   if (hasNext) $("nextBtn").addEventListener("click", function () { startLesson(cur + 1); });
