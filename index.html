@@ -243,6 +243,10 @@ button, input { font: inherit; color: inherit; }
 .hero .btn-row { display: flex; flex-wrap: wrap; gap: 10px; }
 @media (max-width: 700px) { .honor-list { grid-template-columns: 1fr; } }
 
+/* Certificate */
+.cert-img { display: block; width: 100%; max-width: 880px; margin-inline: auto; border-radius: 12px; border: 1px solid var(--line); background: var(--card); }
+.cert-note { color: var(--muted); font-size: 0.9rem; margin-top: 12px; max-width: 60ch; }
+
 /* Success effects */
 #fx { position: fixed; inset: 0; pointer-events: none; z-index: 50; overflow: hidden; }
 .spark { position: absolute; width: 9px; height: 9px; border-radius: 2px; }
@@ -316,7 +320,8 @@ button, input { font: inherit; color: inherit; }
         <p class="lead">كل درس فيه 10 أسئلة، وكل إجابة صحيحة بدرجة، فدرجة الدرس من 10 ومجموع كل الدروس من <b id="maxTotal">110</b>. بعد كل إجابة يظهر التصحيح فورًا، وفي آخر الدرس تبعت درجتك لمسيو رضا على واتساب.</p>
       </div>
       <div class="wrap">
-        <div class="btn-row" style="margin-top:20px"><button class="btn btn-line btn-sm" id="honorBtn" type="button"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg><span>لوحة الشرف</span></button></div>
+        <div class="btn-row" style="margin-top:20px"><button class="btn btn-line btn-sm" id="honorBtn" type="button"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg><span>لوحة الشرف</span></button><button class="btn btn-fill btn-sm" id="certBtn" type="button" hidden>شهادة التقدير</button></div>
+        <p class="cert-note" id="certNote"></p>
         <div class="stats">
           <div class="stat"><span class="stat-v" id="stLessons">10</span><span class="stat-l">دروس</span></div>
           <div class="stat"><span class="stat-v" id="stQs">100</span><span class="stat-l">سؤال</span></div>
@@ -348,6 +353,21 @@ button, input { font: inherit; color: inherit; }
           <p>الطلاب المتفوقون المحترمين مبروك ليكم وتستاهلوا كل خير ♥</p>
         </div>
         <div class="honor-list" id="honorList"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="certView" hidden>
+    <div class="band" style="padding-top:28px">
+      <div class="wrap">
+        <button class="back" id="certBack" type="button">← كل الدروس</button>
+        <div class="sec-head" style="margin-top:22px">
+          <span class="eyebrow">Certificat d'honneur</span>
+          <h2>شهادة التقدير</h2>
+          <p>اسمك مكتوب فيها تلقائيًا. اضغط تحميل لحفظها كصورة. ولو الزر ما اشتغلش على موبايلك، اضغط على الصورة مطولًا واحفظها.</p>
+        </div>
+        <img id="certImg" class="cert-img" alt="شهادة تقدير">
+        <div class="res-row" style="margin-top:20px"><a class="btn btn-fill" id="certDl" href="#" download="certificate.png">تحميل الشهادة</a><button class="btn btn-line" id="certBack2" type="button">رجوع</button></div>
       </div>
     </div>
   </section>
@@ -564,6 +584,7 @@ function showView(v) {
   $("pickerView").hidden = v !== "picker";
   $("quizView").hidden = v !== "quiz";
   $("honorView").hidden = v !== "honor";
+  $("certView").hidden = v !== "cert";
   if (v === "honor") setTimeout(playWin, 80);
   window.scrollTo(0, 0);
 }
@@ -659,6 +680,11 @@ function renderPicker() {
   $("hdrAvg").textContent = sum + " / " + (LESSONS.length * 10);
   $("maxTotal").textContent = LESSONS.length * 10;
   $("helloName").textContent = name;
+  var elig = certEligible();
+  $("certBtn").hidden = !elig;
+  $("certNote").textContent = elig
+    ? "مبروك! تقدر تحمّل شهادة التقدير الخاصة بيك باسمك."
+    : "عشان تحصل على شهادة تقدير: حل كل الدروس وخلّي مجموعك " + Math.ceil(LESSONS.length * 10 * HONOR_PCT / 100) + " من " + (LESSONS.length * 10) + " أو أكتر.";
 }
 
 /* Lesson */
@@ -753,7 +779,7 @@ function finish() {
     '<p class="share-note">يفتح واتساب برسالة جاهزة لمسيو رضا على الرقم <span class="num">01558186187</span>. اضغط إرسال لتصله درجتك.</p>' +
     '<div class="res-row"><button class="btn btn-fill" id="retryBtn" type="button">أعد الدرس</button>' +
     (hasNext ? '<button class="btn btn-line" id="nextBtn" type="button">الدرس التالي</button>' : '') +
-    '<button class="btn btn-line" id="honorBtn2" type="button">لوحة الشرف</button><button class="btn btn-line" id="listBtn" type="button">كل الدروس</button></div></div>';
+    ''  + (certEligible() ? '<button class="btn btn-fill" id="certBtn2" type="button">حمّل شهادة التقدير</button>' : '') + '<button class="btn btn-line" id="honorBtn2" type="button">لوحة الشرف</button><button class="btn btn-line" id="listBtn" type="button">كل الدروس</button></div></div>';
   slot.querySelector(".who b").textContent = name;
   slot.querySelector("h3").textContent = title;
   slot.querySelector(".msg").textContent = msg;
@@ -781,6 +807,7 @@ function finish() {
     });
   }
   $("honorBtn2").addEventListener("click", function () { renderHonor(); showView("honor"); });
+  if ($("certBtn2")) $("certBtn2").addEventListener("click", openCert);
   var text = "السلام عليكم مسيو رضا،\nأنا الطالب: " + name + "\nنتيجتي في الدرس " + L.n + " (" + L.title + ") هي " + score + " من 10.\nمجموع درجاتي في كل الدروس: " + grand + " من " + (LESSONS.length * 10) + ".";
   $("waBtn").setAttribute("href", "https://wa.me/" + TEACHER + "?text=" + encodeURIComponent(text));
   $("retryBtn").addEventListener("click", function () { startLesson(cur); });
@@ -896,6 +923,99 @@ function loadHonor() {
 }
 $("honorBtn").addEventListener("click", function () { renderHonor(); showView("honor"); });
 $("honorBack").addEventListener("click", goHome);
+
+/* Certificate of appreciation, drawn on a canvas and saved as a PNG */
+var certUrl = null;
+function totalScore() { var b = myBest(), t = 0; LESSONS.forEach(function (L) { if (b[L.id]) t += b[L.id].s; }); return t; }
+function certEligible() {
+  var b = myBest();
+  for (var i = 0; i < LESSONS.length; i++) if (!b[LESSONS[i].id]) return false;
+  return totalScore() * 100 >= LESSONS.length * 10 * HONOR_PCT;
+}
+function wrapText(ctx, text, maxW) {
+  var words = text.split(" "), lines = [], cur = "";
+  words.forEach(function (w) {
+    var t = cur ? cur + " " + w : w;
+    if (ctx.measureText(t).width > maxW && cur) { lines.push(cur); cur = w; } else cur = t;
+  });
+  if (cur) lines.push(cur);
+  return lines;
+}
+function drawCert() {
+  var W = 1754, H = 1240, c = document.createElement("canvas");
+  c.width = W; c.height = H;
+  var x = c.getContext("2d");
+  var D = '"Cairo","Segoe UI",Tahoma,sans-serif', B = '"Tajawal","Segoe UI",Tahoma,sans-serif';
+  x.direction = "rtl"; x.textAlign = "center"; x.textBaseline = "middle";
+  var g = x.createLinearGradient(0, 0, W, H); g.addColorStop(0, "#07122a"); g.addColorStop(1, "#102447");
+  x.fillStyle = g; x.fillRect(0, 0, W, H);
+  var rg = x.createRadialGradient(W / 2, H / 2, 80, W / 2, H / 2, 900);
+  rg.addColorStop(0, "rgba(226,176,74,0.17)"); rg.addColorStop(1, "rgba(226,176,74,0)");
+  x.fillStyle = rg; x.fillRect(0, 0, W, H);
+  x.strokeStyle = "#e2b04a"; x.lineWidth = 8; x.strokeRect(40, 40, W - 80, H - 80);
+  x.lineWidth = 2; x.strokeStyle = "rgba(240,200,105,0.7)"; x.strokeRect(66, 66, W - 132, H - 132);
+  [[66, 66, 1, 1], [W - 66, 66, -1, 1], [66, H - 66, 1, -1], [W - 66, H - 66, -1, -1]].forEach(function (p) {
+    x.save(); x.translate(p[0], p[1]); x.scale(p[2], p[3]);
+    x.strokeStyle = "#e2b04a"; x.lineWidth = 5; x.beginPath(); x.moveTo(0, 90); x.lineTo(0, 0); x.lineTo(90, 0); x.stroke();
+    x.fillStyle = "#e2b04a"; x.beginPath(); x.arc(0, 0, 11, 0, 7); x.fill(); x.restore();
+  });
+  function gold(y, h) { var q = x.createLinearGradient(0, y - h / 2, 0, y + h / 2); q.addColorStop(0, "#f6dc92"); q.addColorStop(1, "#c8922a"); return q; }
+  /* title */
+  x.fillStyle = gold(235, 140); x.font = "800 130px " + D; x.fillText("شهادة تقدير", W / 2, 235);
+  x.fillStyle = "#a3b3d1"; x.font = "500 38px " + B; x.fillText("C E R T I F I C A T   D ' H O N N E U R", W / 2, 335);
+  x.fillStyle = "#f6f2e7"; x.font = "600 48px " + D; x.fillText("يتشرف مسيو رضا الخشن بمنح هذه الشهادة إلى", W / 2, 440);
+  /* name, shrunk until it fits */
+  var size = 124;
+  while (size > 56) { x.font = "800 " + size + "px " + D; if (x.measureText(name).width <= 1250) break; size -= 4; }
+  x.fillStyle = gold(565, size); x.fillText(name, W / 2, 565);
+  var ul = x.createLinearGradient(W / 2 - 520, 0, W / 2 + 520, 0);
+  ul.addColorStop(0, "rgba(226,176,74,0)"); ul.addColorStop(0.5, "#e2b04a"); ul.addColorStop(1, "rgba(226,176,74,0)");
+  x.fillStyle = ul; x.fillRect(W / 2 - 520, 640, 1040, 4);
+  /* body */
+  var total = LESSONS.length * 10, score = totalScore();
+  x.fillStyle = "#f6f2e7"; x.font = "500 46px " + D;
+  var lines = wrapText(x, "تقديرًا للتفوق المتميز في اختبارات اللغة الفرنسية للصف الأول الثانوي (بكالوريا نظام حديث)", 1350);
+  lines.forEach(function (l, i) { x.fillText(l, W / 2, 705 + i * 68); });
+  x.fillStyle = "#f0c869"; x.font = "700 52px " + D;
+  x.fillText("بمجموع درجات " + score + " من " + total, W / 2, 705 + lines.length * 68 + 28);
+  /* footer */
+  var fy = 1030;
+  x.fillStyle = "#a3b3d1"; x.font = "500 36px " + D; x.fillText("التاريخ", 340, fy - 34);
+  x.fillStyle = "#f6f2e7"; x.font = "600 44px " + D;
+  x.fillText(new Date().toLocaleDateString("ar-EG", { day: "numeric", month: "long", year: "numeric" }), 340, fy + 26);
+  x.fillStyle = "#a3b3d1"; x.font = "500 36px " + D; x.fillText("معلم اللغة الفرنسية", W - 340, fy - 34);
+  x.fillStyle = gold(fy + 30, 70); x.font = "800 64px " + D; x.fillText("مسيو رضا الخشن", W - 340, fy + 36);
+  /* seal with the teacher's photo */
+  var cx = W / 2, cy = fy, r = 96, img = document.querySelector(".hdr .logo-mark img");
+  x.save(); x.beginPath(); x.arc(cx, cy, r, 0, 7); x.closePath(); x.clip();
+  if (img && img.complete && img.naturalWidth) x.drawImage(img, cx - r, cy - r, r * 2, r * 2); else { x.fillStyle = "#0f2042"; x.fillRect(cx - r, cy - r, r * 2, r * 2); }
+  x.restore();
+  x.strokeStyle = "#e2b04a"; x.lineWidth = 8; x.beginPath(); x.arc(cx, cy, r + 4, 0, 7); x.stroke();
+  x.lineWidth = 2; x.beginPath(); x.arc(cx, cy, r + 18, 0, 7); x.stroke();
+  return c;
+}
+function openCert() {
+  if (!certEligible()) return;
+  var f = [];
+  if (document.fonts && document.fonts.load) f = [document.fonts.load('800 100px "Cairo"', "شهادة تقدير"), document.fonts.load('600 40px "Cairo"', "يتشرف مسيو"), document.fonts.load('500 40px "Tajawal"', "Certificat")];
+  Promise.all(f).catch(function () {}).then(function () {
+    var c = drawCert();
+    $("certImg").src = c.toDataURL("image/png");
+    c.toBlob(function (blob) {
+      if (!blob) return;
+      if (certUrl) URL.revokeObjectURL(certUrl);
+      certUrl = URL.createObjectURL(blob);
+      var a = $("certDl");
+      a.href = certUrl;
+      a.download = "شهادة-تقدير-" + name.replace(/[^\w؀-ۿ ]+/g, "").trim().replace(/ +/g, "-") + ".png";
+    }, "image/png");
+    showView("cert");
+    confetti();
+  });
+}
+$("certBtn").addEventListener("click", openCert);
+$("certBack").addEventListener("click", goHome);
+$("certBack2").addEventListener("click", goHome);
 
 /* Name gate */
 $("nameInput").value = data.last || "";
